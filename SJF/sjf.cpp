@@ -9,6 +9,8 @@ struct Process {
         completionTime,
         responseTime;
     
+    bool isReady;
+
     string name;
 };
 
@@ -24,66 +26,50 @@ void executeProcess(int readyQueueIndex) {
 }
 
 void printFinishedQueue() {
-    for(int i = 0; i < finishedQueue.size(); i++) {
-        cout << "\n " << finishedQueue.at(i).name;
-        cout << " " << finishedQueue.at(i).arrivalTime;
-        cout << " " << finishedQueue.at(i).burstTime;
-        cout << " " << finishedQueue.at(i).completionTime;
+    for(Process& process: finishedQueue) {
+        cout << "\n " << process.name;
+        cout << " " << process.arrivalTime;
+        cout << " " << process.burstTime;
+        cout << " " << process.completionTime;
     }
-}
-
-void printReadyQueue() {
-    for (int i = 0; i < readyQueue.size(); i++)
-    {
-        cout << "\n " << readyQueue.at(i).name;
-        cout << " " << readyQueue.at(i).arrivalTime;
-        cout << " " << readyQueue.at(i).burstTime;
-    }
-    cout << endl;
 }
 
 int main() {
     vector<Process> input;
     Process tmp;
     char choice;
-    int numProcesses;
 
     do {
         cout << "\n Enter name, arrival time and burst time of process: ";
         cin >> tmp.name >> tmp.arrivalTime >> tmp.burstTime;
+        tmp.isReady = false;
         input.push_back(tmp);
 
         cout << "\n Do you want to input another process? (Y/N): ";
         cin >> choice;
     } while(toupper(choice) == 'Y');
-    numProcesses = input.size();
 
-    while( finishedQueue.size() != numProcesses ) {
+    while( finishedQueue.size() != input.size() ) {
 
         /*
             push processes in the readyqueue when they arrive
                 Time complexity: O(n)
                 Space Complexity: O(1)
         */
-        for (int i = 0; i < input.size(); i++)
-        {
-            if (input.at(i).arrivalTime <= globalTime)
-            {
-                readyQueue.push_back(input.at(i));
-                input.erase(input.begin() + i);
+        for(Process& process: input) {
+            if(process.arrivalTime <= globalTime && !process.isReady) {
+                process.isReady = true;
+                readyQueue.push_back(process);
             }
         }
 
-        cout << "\n Global Time = " << globalTime;
-        printReadyQueue();
-
         /*
-            search for process with shortest burst time
+            Search for process with shortest burst time
             Time complexity: O(n)
             Space Complexity: O(1)
         */
         int shortestBurstTime = readyQueue.at(0).burstTime, shortestBurstTimeIndex = 0;
-        for (int i = 0; i < readyQueue.size(); i++)
+        for (size_t i = 1; i < readyQueue.size(); i++)
         {
             if (readyQueue.at(i).burstTime < shortestBurstTime)
             {
@@ -96,7 +82,7 @@ int main() {
         executeProcess(shortestBurstTimeIndex);
     }
 
-    cout << endl << "Finished Queue" << endl;
+    cout << endl << "Finished Queue";
     printFinishedQueue();
 
     return 0;
