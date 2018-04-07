@@ -1,7 +1,7 @@
 FLAGS = -std=c++17 -Wall -Wextra -pedantic-errors
 
 build: src/$(NAME).cpp
-	mkdir build
+	mkdir -p build
 	g++ $(FLAGS) src/$(NAME).cpp -o build/$(NAME)
 
 run: build/$(NAME)
