@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-
+#include <algorithm>
 using namespace std;
 
 struct Process
@@ -13,65 +13,52 @@ struct Process
         completionTime,
         remainingTime;
 
-    float responseRatio;
     bool isReady;
 
     string name;
 };
 
-// TODO: Change this to show preemptive scheduling
-void printFinishedQueue(const vector<Process> &finishedQueue)
-{
-    cout << "Finished queue: ";
-    for (Process p : finishedQueue)
-    {
-        cout << endl << p.name;
-        cout << " " << p.arrivalTime;
-        cout << " " << p.burstTime;
-        cout << " " << p.responseTime;
-        cout << " " << p.completionTime;
-        cout << " " << p.turnAroundTime;
-    }
-}
-
-/*
-	Non-preemptive scheduling
-		- add burst time to global time
-		- assign completion time
-		- compute turn around time
-		- move process into finsished queue
-*/
-void executeProcess(int position)
-{
-    readyQueue.at(position).responseTime = globalTime;
-    globalTime++;
-    readyQueue.at(position).remainingTime--;
-
-    if(readyQueue.at(position).remainingTime == 0) {
-        readyQueue.at(position).completionTime = globalTime;
-        readyQueue.at(position).turnAroundTime = globalTime - readyQueue.at(position).arrivalTime;
-        finishedQueue.push_back(readyQueue.at(position));
-        readyQueue.erase(readyQueue.begin() + position);
-    }
-
-    /*
-		Calculate waiting time for all processes not being executed
-			- Time complexity: 	O(n)
-    */
-	
-    for (size_t i = 0; i < readyQueue.size(); i++)
-    {
-        if (i != position)
-        {
-            readyQueue.at(i).waitingTime = readyQueue.at(position).burstTime;
-        }
-    }
+bool shortestRemainingTime(Process p1, Process p2) {
+    return p1.remainingTime < p2.remainingTime;
 }
 
 int globalTime;
 vector<Process> input;
 vector<Process> readyQueue;
 vector<Process> finishedQueue;
+
+/*
+	Preemptive scheduling
+		- execute process from readyqueue for one time unit
+        - increment globalTime for one time unit
+        - put that process back in readyqueue
+        - execute next process from readyqueue
+*/
+void executeProcess()
+{
+    sort(readyQueue.begin(), readyQueue.end(), shortestRemainingTime);
+
+    Process &current_process = readyQueue.front();
+    cout << globalTime << " " << current_process.name << " ";
+    globalTime++;
+    current_process.remainingTime--;
+
+    /*
+		Increment waiting time for all processes not being executed
+			- Time complexity: 	O(n)
+    */
+   for(int i = 1; i < readyQueue.size(); i++) {
+       readyQueue.at(i).waitingTime++;
+   }
+
+    if(current_process.remainingTime == 0) {
+        current_process.completionTime = globalTime;
+        current_process.turnAroundTime = globalTime - current_process.arrivalTime;
+        finishedQueue.push_back(current_process);
+        readyQueue.erase(readyQueue.begin() + 0);
+    }
+
+}
 
 int main()
 {
@@ -108,20 +95,10 @@ int main()
             }
         }
 
-        int smallestRemainingTime = readyQueue.at(0).remainingTime,
-            smallestRemainingTimeIndex = 0;
-
-        for(size_t i = 0; i < readyQueue.size(); i++) {
-            if(readyQueue.at(i).remainingTime < smallestRemainingTime) {
-                smallestRemainingTime = readyQueue.at(i).remainingTime;
-                smallestRemainingTimeIndex = i;
-            }
-        }
-
-        executeProcess(smallestRemainingTimeIndex);
+        executeProcess();
     }
 
-    printFinishedQueue(finishedQueue);
-
+    cout << globalTime << endl;
+    
     return 0;
 }
