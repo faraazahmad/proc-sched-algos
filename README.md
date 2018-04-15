@@ -4,21 +4,21 @@ Algorithms for process scheduling
 ## CPU management algorithms
  - Shortest Job First (SJF)
  - Shortest Remaining Time First (SRTF)
- - Highest Remaining Ratio Next (HRRN)
+ - Longest Remaining Time First (LRTF)
+ - Highest Response Ratio Next (HRRN)
  #### TODO
  - Longest Job First
  - Round Robin
  - Priority Scheduling
  - First Come First Served
- - Longest Response Time First
 
 <hr>
 
 ## Memory management algorithms
  - First Fit
  - Worst Fit
- - Best Fit
  #### TODO
+ - Best Fit
  - FIFO Page Replacement
  - LRU Page Replacement
  - LFU Page Replacement

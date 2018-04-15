@@ -18,7 +18,7 @@ struct Process
     string name;
 };
 
-bool shortestRemainingTime(Process p1, Process p2) {
+bool longestRemainingTime(Process p1, Process p2) {
     return p1.remainingTime < p2.remainingTime;
 }
 
@@ -36,9 +36,9 @@ vector<Process> finishedQueue;
 */
 void executeProcess()
 {
-    // sort ready queue by shortest remaining time
-    sort(readyQueue.begin(), readyQueue.end(), shortestRemainingTime);
-    // choose process with the least remaining time
+    // sort ready queue by longest remaining time
+    sort(readyQueue.begin(), readyQueue.end(), longestRemainingTime);
+    // choose process with the most remaining time
     Process &current_process = readyQueue.front();
     // print statement for Gantt chart
     cout << globalTime << " " << current_process.name << " ";
