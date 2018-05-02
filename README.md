@@ -17,8 +17,8 @@ Algorithms for process scheduling
 ## Memory management algorithms
  - First Fit
  - Worst Fit
- #### TODO
  - Best Fit
+ #### TODO
  - FIFO Page Replacement
  - LRU Page Replacement
  - LFU Page Replacement
